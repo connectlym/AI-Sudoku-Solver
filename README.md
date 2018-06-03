@@ -22,13 +22,7 @@ Python 3
 
 Explain how to run the automated tests for this system
 
-## Built With
-
-* [Python](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributor
+## Contributors
 
 * [YM Li](https://github.com/MonicaLiii)
 * [Add your name here]
