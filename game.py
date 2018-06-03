@@ -7,8 +7,13 @@
 # at Union College, NY, US,
 # for the final project of CSC320 - Artificial Intelligence.
 # ------------------------------
-# References: Solving Every Sudoku Puzzle, Peter Norvig,
-#             http://www.norvig.com/sudoku.html
+# References:
+# 1. Solving Every Sudoku Puzzle, Peter Norvig,
+#   http://www.norvig.com/sudoku.html
+# 2. Solving Every Sudoku Puzzle (code), Peter Norvig,
+#   https://gist.github.com/neilalbrock/894520
+# 3. Sudoku Solver | AI Agent, Prakhar Mishra,
+#   https://medium.com/@pmprakhargenius/sudoku-solver-ai-agent-700897b936c7
 
 class Sudoku():
     """The sudoku game."""
