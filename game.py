@@ -144,6 +144,7 @@ class Sudoku():
         ## To start, every square can be any digit; then assign values from the grid.
         digits = '123456789'
         values = dict((s, digits) for s in self.squares)
+
         for s, d in self.values_to_grid(grid).items():
             if d in digits and not self.assign(values, s, d):
                 return False  ## (Fail if we can't assign d to square s.)
@@ -152,7 +153,7 @@ class Sudoku():
 
     ################ Games ################
 
-    def display(self):
+    def displaySolver(self):
         """ Display the values as a 2-D grid.
         @:parameter
             - values (dict): the dict storing all values (i.e. 'A1' => '135')
@@ -165,6 +166,8 @@ class Sudoku():
                           for c in self.cols))
             if r in 'CF': print(line)
         print()
+
+    ################ Solver ################
 
     def assign(self, values, s, d):
         """ Eliminate all the other values (except d) from values[s] and propagate.
