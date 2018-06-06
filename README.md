@@ -14,7 +14,17 @@ The motivations of doing this project could also be here.
 A Sudoku puzzle is a grid of 81 squares; the majority of enthusiasts label the columns 1-9, the rows A-I, and call a
 collection of nine squares (column, row, or box) a unit and the squares that share a unit the peers. A puzzle leaves
 some squares blank and fills others with digits, and the whole idea is that a puzzle is solved if the squares in each
-unit are filled with a permutation of the digits 1 to 9.
+unit are filled with a permutation of the digits 1 to 9. That is, no digit can appear twice in a unit, and every digit
+must appear once. This implies that each square must have a different value from any of its peers.
+
+
+Those with experience solving Sudoku puzzles know that there are two important strategies that we can use to make
+progress towards filling in all the squares:
+
+(1) If a square has only one possible value, then eliminate that value from the square's peers.
+
+(2) If a unit has only one possible place for a value, then put the value there.
+
 
 ### Prerequisites
 
