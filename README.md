@@ -25,15 +25,15 @@ Explain how to run the automated tests for this system
 ## Contributors
 
 * [YM Li](https://github.com/MonicaLiii)
-* [Add your name here]
-* [Add your name here]
+* [Caleb Seymour](https://github.com/ccmour)
+* [Luke Yu](https://github.com/zyu15)
 
 ## Acknowledgments
 
 * [Solving Every Sudoku Puzzle, Peter Norvig](http://www.norvig.com/sudoku.html)
 * [Solving Every Sudoku Puzzle (code), Peter Norvig](https://gist.github.com/neilalbrock/894520)
 * [Sudoku Solver | AI Agent, Prakhar Mishra](https://medium.com/@pmprakhargenius/sudoku-solver-ai-agent-700897b936c7)
-*
+* [Sudoku Tutorial 3 - Box Line Pointing, dkmgames](https://www.youtube.com/watch?v=TS30lH1BJf8)
 
 ## License
 
