@@ -3,7 +3,7 @@
 # ------------------------------
 # Original contributor: Zack Thoutt
 # Original version: https://github.com/zackthoutt/sudoku-ai
-# Modified by YM Li, in Spring 2018,
+# Modified by YM Li, Caleb Seymour, in Spring 2018,
 # at Union College, NY, US,
 # for the final project of CSC320 - Artificial Intelligence.
 # ------------------------------
@@ -46,8 +46,9 @@ class Sudoku():
 
     def __init__(self, iniGrid):
         """ Initialize the Sudoku puzzle.
-            @:parameter iniGrid (str) - a string representing the sudoku grid.
-                  i.e. '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+        @:parameter
+            - iniGrid (str): a string representing the sudoku grid.
+                i.e. '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
         """
 
         # Check if the initialization arg is 81-char-long or not.
@@ -115,10 +116,10 @@ class Sudoku():
 
     def values_to_grid(self, values=None):
         """ Convert the dictionary board representation to as string.
-            @:parameter
-                - values (dict): the dict of the selected square (i.e. 'A1' => '135')
-            #:return
-                - grid (str): string representing the sudoku grid
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+        #:return
+            - grid (str): string representing the sudoku grid
                   Ex. '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
         """
 
@@ -137,12 +138,12 @@ class Sudoku():
     def grid_to_values(self, grid=None):
         """ Convert grid into a dict of {square: char}.
             Notice: '.' means empty.
-            @:parameter
-                - grid (str): string representing the sudoku grid
+        @:parameter
+            - grid (str): string representing the sudoku grid
                   Ex. '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
-            @:return
-                - values (dict): the dict of the selected square (i.e. 'A1' => '135')
-                                 Empty values will be set to '.'
+        @:return
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+                            Empty values will be set to '.'
         """
 
         if grid is None:
@@ -157,14 +158,15 @@ class Sudoku():
 
         return sudoku_grid
 
+    ################ Games ################
 
     def remove_digit(self, square, digit):
         """ Remove a digit from the possible values of a box.
-            @:parameter
-                - square (str): the square to remove the digit from
-                - digit (str): the digit to remove from the square
-            @:return
-                - values (dict): the dict values after updated
+        @:parameter
+            - square (str): the square to remove the digit from
+            - digit (str): the digit to remove from the square
+        @:return
+            - values (dict): the dict values after updated
         """
 
         self.values[square] = self.values[square].replace(digit, '.')
@@ -172,8 +174,8 @@ class Sudoku():
 
     def display(self, values):
         """ Display the values as a 2-D grid.
-            @:parameter
-                - values (dict): the dict of the selected square (i.e. 'A1' => '135')
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
         """
 
         width = 1+max(len(self.values[s]) for s in self.squares)
@@ -187,8 +189,8 @@ class Sudoku():
 
     def is_solved(self):
         """ Determine if the puzzle has been solved.
-            @:return
-                - solved (boolean): True if solved; False otherwise.
+        @:return
+            - solved (boolean): True if solved; False otherwise.
         """
 
         fully_reduced = all(len(self.values[s]) == 1 for s in self.squares)
