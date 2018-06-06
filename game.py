@@ -83,7 +83,7 @@ class Sudoku():
         # peers = dict((s, set(sum(units[s], [])) - set([s]))
         #             for s in squares)
 
-        self.peers = dict( (s, set( sum(self.units[s],[]) ) - {[s]} ) for s in self.squares)
+        self.peers = dict( (s, set( sum(self.units[s],[]) ) - set([s]) ) for s in self.squares)
 
 
     @staticmethod
@@ -176,10 +176,10 @@ class Sudoku():
                 - values (dict): the dict of the selected square (i.e. 'A1' => '135')
         """
 
-        width = 1+max(len(values[s]) for s in self.squares)
+        width = 1+max(len(self.values[s]) for s in self.squares)
         line = '+'.join(['-'*(width*3)]*3)
         for r in self.rows:
-            print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
+            print(''.join(self.values[r+c].center(width)+('|' if c in '36' else '')
                           for c in self.cols))
             if r in 'CF': print(line)
         print()
