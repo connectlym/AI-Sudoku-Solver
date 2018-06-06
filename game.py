@@ -114,7 +114,7 @@ class Sudoku():
 
     ################ Grids ################
 
-    def values_to_grid(self, values=None):
+    def values_to_grid(self, values):
         """ Convert the dictionary board representation to as string.
         @:parameter
             - values (dict): the dict storing all values (i.e. 'A1' => '135')
@@ -122,20 +122,15 @@ class Sudoku():
             - grid (str): string representing the sudoku grid
                   Ex. '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
         """
+        digits = '123456789'
+        chars = [c for c in self.grid if c in digits or c in '0.']
 
-        if values is None:
-            values = self.values
+        assert len(chars) == 81
 
-        res = []
-        for r in self.rows:
-            for c in self.cols:
-                v = values[r + c]
-                res.append(v if len(v) == 1 else '.')
-
-        return ''.join(res)
+        return dict(zip(self.squares, chars))
 
 
-    def grid_to_values(self, grid=None):
+    def grid_to_values(self, grid):
         """ Convert grid into a dict of {square: char}.
             Notice: '.' means empty.
         @:parameter
@@ -146,33 +141,18 @@ class Sudoku():
                             Empty values will be set to '.'
         """
 
-        if grid is None:
-            grid = self.grid
+        ## To start, every square can be any digit; then assign values from the grid.
+        digits = '123456789'
+        values = dict((s, digits) for s in self.squares)
+        for s, d in self.values_to_grid(grid).items():
+            if d in digits and not self.assign(values, s, d):
+                return False  ## (Fail if we can't assign d to square s.)
 
-        sudoku_grid = {}
-        for val, key in zip(grid, self.squares):
-            if val == '.' or val == '0':
-                sudoku_grid[key] = '.'
-            else:
-                sudoku_grid[key] = val
-
-        return sudoku_grid
+        return values
 
     ################ Games ################
 
-    def remove_digit(self, square, digit):
-        """ Remove a digit from the possible values of a box.
-        @:parameter
-            - square (str): the square to remove the digit from
-            - digit (str): the digit to remove from the square
-        @:return
-            - values (dict): the dict values after updated
-        """
-
-        self.values[square] = self.values[square].replace(digit, '.')
-
-
-    def display(self, values):
+    def display(self):
         """ Display the values as a 2-D grid.
         @:parameter
             - values (dict): the dict storing all values (i.e. 'A1' => '135')
@@ -186,22 +166,94 @@ class Sudoku():
             if r in 'CF': print(line)
         print()
 
-
-    def is_solved(self):
-        """ Determine if the puzzle has been solved.
+    def assign(self, values, s, d):
+        """ Eliminate all the other values (except d) from values[s] and propagate.
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+            - s (key): the selected square
+            - d (int): the selected value
         @:return
-            - solved (boolean): True if solved; False otherwise.
+            - values (dict), or False if a contradiction is detected.
         """
 
-        fully_reduced = all(len(self.values[s]) == 1 for s in self.squares)
-        if not fully_reduced:
-            return False
+        other_values = values[s].replace(d, '')
 
-        for unit in self.unitlist:
-            required_digits = '123456789'
-            for box in unit:
-                required_digits = required_digits.replace(self.values[box], '')
-            if len(required_digits) != 0:
+        # if all(self.eliminate(values, s, d2) for d2 in other_values):
+        #     return values
+        # else:
+        #     return False
+        for i in other_values:
+            if self.eliminate(values, s, i) == False:
                 return False
 
-        return True
+        return values
+
+
+    def eliminate(self, values, s, d):
+        """Eliminate d from values[s]; propagate when values or places <= 2.
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+            - s (key): the selected square
+            - d (int): the selected value
+        @:return
+            - values (dict), or False if a contradiction is detected.
+        """
+
+        if d not in values[s]:
+            return values  ## Already eliminated
+
+        values[s] = values[s].replace(d, '')
+
+        ## (1) If a square s is reduced to one value d2, then eliminate d2 from the peers.
+        if len(values[s]) == 0:
+            return False  ## Contradiction: removed last value
+        elif len(values[s]) == 1:
+            d2 = values[s]
+            if not all(self.eliminate(values, s2, d2) for s2 in self.peers[s]):
+                return False
+
+        ## (2) If a unit u is reduced to only one place for a value d, then put it there.
+        for u in self.units[s]:
+            dplaces = [s for s in u if d in values[s]]
+            if len(dplaces) == 0:
+                return False  ## Contradiction: no place for this value
+            elif len(dplaces) == 1:
+                # d can only be in one place in unit; assign it there
+                if not self.assign(values, dplaces[0], d):
+                    return False
+
+        return values
+
+
+    def search(self, values):
+        """Using DFS and propagation, try all possible values.
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+        @:return
+            - values (dict) if solved, False if cannot be solved.
+        """
+
+        if values is False:
+            return False  ## Failed earlier
+
+        if all(len(values[s]) == 1 for s in self.squares):
+            return values  ## Solved!
+
+        ## Chose the unfilled square s with the fewest possibilities
+        n, s = min((len(values[s]), s) for s in self.squares if len(values[s]) > 1)
+
+        return self.some(self.search(self.assign(values.copy(), s, d))
+                    for d in values[s])
+
+
+    def some(self, seq):
+        "Return some element of seq that is true."
+        for e in seq:
+            if e:
+                return e
+        return False
+
+
+    def solve(self, grid):
+        return self.search(Sudoku.grid_to_values(self, grid))
+
