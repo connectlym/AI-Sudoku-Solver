@@ -1,8 +1,7 @@
 # ------------------------------
 #       A 9x9 Sudoku Game.
 # ------------------------------
-# Original contributor: Zack Thoutt
-# Original version: https://github.com/zackthoutt/sudoku-ai
+# Original contributor: Peter Norvig
 # Modified by YM Li, Caleb Seymour, in Spring 2018,
 # at Union College, NY, US,
 # for the final project of CSC320 - Artificial Intelligence.
@@ -14,6 +13,8 @@
 #   https://gist.github.com/neilalbrock/894520
 # 3. Sudoku Solver | AI Agent, Prakhar Mishra,
 #   https://medium.com/@pmprakhargenius/sudoku-solver-ai-agent-700897b936c7
+# 4. Sudoku Tutorial 2 - Naked Pairs, dkmgames
+#   https://www.youtube.com/watch?v=KUF_P9LypNs
 
 class Sudoku():
     """The sudoku game."""
@@ -64,26 +65,14 @@ class Sudoku():
     def build_game(self):
         """ Build the game of sudoku puzzle."""
 
-        # self.squares = [r + c for r in self.rows for c in self.cols]
         self.squares = self.cross(self.rows, self.cols)
-
-        # unitlist = ([cross(rows, c) for c in cols] +
-        #            [cross(r, cols) for r in rows] +
-        #            [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')])
 
         self.columnUnits = [self.cross(self.rows, c) for c in self.cols]
         self.rowUnits = [self.cross(r, self.cols) for r in self.rows]
         self.squareUnits = [self.cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
         self.unitlist = self.columnUnits + self.rowUnits + self.squareUnits
 
-        # units = dict((s, [u for u in unitlist if s in u])
-        #             for s in squares)
-
         self.units = dict((s, [u for u in self.unitlist if s in u]) for s in self.squares)
-
-        # peers = dict((s, set(sum(units[s], [])) - set([s]))
-        #             for s in squares)
-
         self.peers = dict( (s, set( sum(self.units[s],[]) ) - set([s]) ) for s in self.squares)
 
 
@@ -95,7 +84,7 @@ class Sudoku():
     ################ Unit Tests ################
 
     def test(self):
-        "A set of tests that must pass."
+        """A set of tests that must pass."""
 
         assert len(self.squares) == 81
         assert len(self.unitlist) == 27
@@ -114,19 +103,23 @@ class Sudoku():
 
     ################ Grids ################
 
-    def values_to_grid(self, values):
-        """ Convert the dictionary board representation to as string.
+    def possible_grid(self, values):
+        """ Store all possibilities into the empty spot.
         @:parameter
             - values (dict): the dict storing all values (i.e. 'A1' => '135')
         #:return
-            - grid (str): string representing the sudoku grid
-                  Ex. '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+            - dict (dict): the dict containing all possibile values of the empties
         """
-        digits = '123456789'
-        chars = [c for c in self.grid if c in digits or c in '0.']
 
+        digits = '123456789'
+        chars = []
+
+        for c in values:
+            if c in digits or c in '0.':
+                chars.append(c)
         assert len(chars) == 81
 
+        # Check https://docs.python.org/3/library/functions.html#zip for how to use zip()
         return dict(zip(self.squares, chars))
 
 
@@ -145,7 +138,7 @@ class Sudoku():
         digits = '123456789'
         values = dict((s, digits) for s in self.squares)
 
-        for s, d in self.values_to_grid(grid).items():
+        for s, d in self.possible_grid(grid).items():
             if d in digits and not self.assign(values, s, d):
                 return False  ## (Fail if we can't assign d to square s.)
 
@@ -167,7 +160,7 @@ class Sudoku():
             if r in 'CF': print(line)
         print()
 
-    ################ Solver ################
+    ################ Solver: Basic ################
 
     def assign(self, values, s, d):
         """ Eliminate all the other values (except d) from values[s] and propagate.
@@ -181,12 +174,8 @@ class Sudoku():
 
         other_values = values[s].replace(d, '')
 
-        # if all(self.eliminate(values, s, d2) for d2 in other_values):
-        #     return values
-        # else:
-        #     return False
         for i in other_values:
-            if self.eliminate(values, s, i) == False:
+            if self.eliminate(values, s, i) is False:
                 return False
 
         return values
@@ -227,9 +216,11 @@ class Sudoku():
 
         return values
 
+    ################ Solver: DFS Search ################
 
     def search(self, values):
         """Using DFS and propagation, try all possible values.
+        This is a recursion algo.
         @:parameter
             - values (dict): the dict storing all values (i.e. 'A1' => '135')
         @:return
@@ -243,14 +234,21 @@ class Sudoku():
             return values  ## Solved!
 
         ## Chose the unfilled square s with the fewest possibilities
-        n, s = min((len(values[s]), s) for s in self.squares if len(values[s]) > 1)
+        # temp is the temporary value for remembering the min len(values[s]) in order to get corresponding 's'.
+        temp, s = min( (len(values[s]), s) for s in self.squares if len(values[s]) > 1 )
 
-        return self.some(self.search(self.assign(values.copy(), s, d))
+        return self.some( self.search( self.assign(values.copy(), s, d) )
                     for d in values[s])
 
 
     def some(self, seq):
-        "Return some element of seq that is true."
+        """Return some element of seq that is true.
+        @:parameter
+            - seq: an iterable obj wait to be checked.
+        @:return
+            - e: if there exists an e,
+            - False: if seq is empty.
+        """
         for e in seq:
             if e:
                 return e
@@ -258,5 +256,76 @@ class Sudoku():
 
 
     def solve(self, grid):
-        return self.search(Sudoku.grid_to_values(self, grid))
+        return self.search(self.grid_to_values(grid))
 
+    ################ Solver: The Naker Twins ################
+
+    def naked_twins(self, values):
+        """ Eliminate values using the naked twins strategy.
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+        @:return
+            - values (dict): the dict with naked twins eliminated
+        """
+
+        for u in self.unitlist:
+            twin_values = self.find_twins(values, u)
+            values = self.eliminate_naked_twins(values, u, twin_values)
+        return values
+
+
+    def find_twins(self, values, unit):
+        """ Find the current twins for a unit (row, column, etc.).
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+            - unit (list): list of squares in a unit
+        @:return
+            - twin_values (list): the values that are length two and occur exactly twice in the unit
+        """
+
+        unitValues = []
+        for u in unit:
+            unitValues.append(values[u])
+
+        results = []
+        for v in unitValues:
+            if len(v) == 2 and unitValues.count(v) == 2:
+                results.append(v)
+        return results
+
+
+    def eliminate_naked_twins(self, values, unit, twin_values):
+        """ Remove the twin(same) values from a unit.
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+            - unit (list): list of squares in a unit
+            - twin_values (list): list of twin values to eliminate from unit
+        @:return
+            - values (dict): updated values dict with twins eliminated from the unit
+        """
+
+        for u in unit:
+            if values[u] not in twin_values:
+                return values
+            for twin in twin_values:
+                for digit in twin:
+                    values = self.remove_digit(values, u, digit)
+        return values
+
+
+    def remove_digit(self, values, square, digit):
+        """ Remove a digit from the possible values of a box.
+        @:parameter
+            - values (dict): the dict storing all values (i.e. 'A1' => '135')
+            - square (str): the square that the digit is removed from
+            - digit (str): the digit to remove
+        @:return
+            - values (dict): the dict updated after removing
+        """
+
+        values[square] = values[square].replace(digit, '')
+        return values
+
+
+    def solveNakedTwins(self, grid):
+        return self.naked_twins(self.grid_to_values(grid))
