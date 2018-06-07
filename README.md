@@ -26,13 +26,14 @@ progress towards filling in all the squares:
 (2) If a unit has only one possible place for a value, then put the value there.
 
 
+But these basic rules are not useful when doing tough puzzles. So, we develop a better solution which use DFS search
+with backtracking to search for the solution of each blank.
+
+
 ### Prerequisites
 
 Python 3
 
-## Running the tests
-
-Explain how to run the automated tests for this system
 
 ## Contributors
 
@@ -46,6 +47,7 @@ Explain how to run the automated tests for this system
 * [Solving Every Sudoku Puzzle (code), Peter Norvig](https://gist.github.com/neilalbrock/894520)
 * [Sudoku Solver | AI Agent, Prakhar Mishra](https://medium.com/@pmprakhargenius/sudoku-solver-ai-agent-700897b936c7)
 * [Sudoku Tutorial 2 - Naked Pairs, dkmgames](https://www.youtube.com/watch?v=KUF_P9LypNs)
+* [Sudoku Dragon](http://www.sudokudragon.com/tutorialnakedtwins.htm)
 
 ## License
 
