@@ -19,9 +19,9 @@ def main():
     #game2.test()
     solved2 = game2.solve(grid2)
     print(solved2)
-    ## Problem left here: Cannot printout the correct soln, although it has been solved (see the printed dict).
-    solved2 = game2.solveNakedTwins(grid2)
-    print(solved2)
+    #game2.solveNakedTwins(grid2)
+    #print('Naked Twins')
+    game2.displaySolver()
 
 
 if __name__ == "__main__":

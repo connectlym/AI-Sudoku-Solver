@@ -256,7 +256,7 @@ class Sudoku():
 
 
     def solve(self, grid):
-        return self.search(self.grid_to_values(grid))
+        self.values = self.search(self.grid_to_values(grid))
 
     ################ Solver: The Naker Twins ################
 
@@ -280,7 +280,7 @@ class Sudoku():
             - values (dict): the dict storing all values (i.e. 'A1' => '135')
             - unit (list): list of squares in a unit
         @:return
-            - twin_values (list): the values that are length two and occur exactly twice in the unit
+            - results (list): the values that are length two and occur exactly twice in the unit
         """
 
         unitValues = []
@@ -306,10 +306,9 @@ class Sudoku():
 
         for u in unit:
             if values[u] not in twin_values:
-                return values
-            for twin in twin_values:
-                for digit in twin:
-                    values = self.remove_digit(values, u, digit)
+                for twin in twin_values:
+                    for digit in twin:
+                        values = self.remove_digit(values, u, digit)
         return values
 
 
@@ -328,4 +327,4 @@ class Sudoku():
 
 
     def solveNakedTwins(self, grid):
-        return self.naked_twins(self.grid_to_values(grid))
+        self.values = self.naked_twins(self.grid_to_values(grid))
