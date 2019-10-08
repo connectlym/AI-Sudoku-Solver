@@ -42,7 +42,7 @@ Python 3
 
 ## Contributors
 
-* [YM Li](https://github.com/MonicaLiii)
+* [YM Li](https://github.com/connectlym)
 * [Caleb Seymour](https://github.com/ccmour)
 * [Luke Yu](https://github.com/zyu15)
 
